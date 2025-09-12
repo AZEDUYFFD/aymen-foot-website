@@ -88,7 +88,6 @@
 
     <div id="admin-banner" class="hidden bg-yellow-500 text-black text-center font-bold p-2 transition-all flex justify-center items-center gap-4">
         <span id="admin-message" class="cursor-pointer"></span>
-        <button id="open-control-panel-btn" class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold py-1 px-3 rounded-md">فتح لوحة التحكم</button>
     </div>
 
     <!-- الشريط العلوي -->
@@ -499,8 +498,17 @@
         }
         
         function showAdminModal() { document.getElementById('admin-modal').classList.remove('hidden'); document.getElementById('admin-password-input').focus(); }
-        function hideAdminModal() { document.getElementById('admin-modal').classList.add('hidden'); document.getElementById('admin-password-input').value = ''; }
-        function checkAdminPassword() { if (document.getElementById('admin-password-input').value === '200411') { setAdminMode(true); hideAdminModal(); } else { document.getElementById('modal-error-msg').classList.remove('hidden'); } }
+        function hideAdminModal() { document.getElementById('admin-modal').classList.add('hidden'); document.getElementById('admin-password-input').value = ''; document.getElementById('modal-error-msg').classList.add('hidden'); }
+        function checkAdminPassword() { 
+            if (document.getElementById('admin-password-input').value === '200411') { 
+                setAdminMode(true); 
+                hideAdminModal(); 
+                renderControlPanel();
+                document.getElementById('control-panel-modal').classList.remove('hidden');
+            } else { 
+                document.getElementById('modal-error-msg').classList.remove('hidden'); 
+            } 
+        }
         function handleAdminLogin() { if (!isAdmin) showAdminModal(); }
         function handleAdminLogout() { setAdminMode(false); }
         
@@ -511,13 +519,9 @@
                 const auth = getAuth(app);
                 onAuthStateChanged(auth, (user) => {
                     if (user) {
-                        // User is signed in anonymously.
                         setupRealtimeListener();
                     } else {
-                        // User is signed out.
-                        signInAnonymously(auth).catch((error) => {
-                            console.error("Anonymous sign-in failed:", error);
-                        });
+                        signInAnonymously(auth).catch((error) => console.error("Anonymous sign-in failed:", error));
                     }
                 });
             } catch (e) {
@@ -526,6 +530,7 @@
             }
             document.getElementById('copyright-notice').addEventListener('click', handleAdminLogin);
             document.getElementById('admin-submit-btn').addEventListener('click', checkAdminPassword);
+            document.getElementById('admin-password-input').addEventListener('keyup', e => { if (e.key === 'Enter') checkAdminPassword(); });
             document.getElementById('admin-cancel-btn').addEventListener('click', hideAdminModal);
             document.getElementById('theme-toggle').addEventListener('click', () => document.documentElement.classList.toggle('light'));
             document.getElementById('league-selector').addEventListener('change', renderAll);
