@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aymen Foot | عالم كرة القدم بين يديك</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Reem+Kufi:wght@700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #1a202c;
+            --bg-secondary: #2d3748;
+            --bg-card: #2d3748;
+            --border-color: #4a5568;
+            --text-primary: #e2e8f0;
+            --text-secondary: #a0aec0;
+            --accent-gold: #D4AF37;
+            --accent-green: #38A169;
+            --accent-red: #E53E3E;
+        }
+
+        html.light {
+            --bg-primary: #f7fafc;
+            --bg-secondary: #edf2f7;
+            --bg-card: #ffffff;
+            --border-color: #e2e8f0;
+            --text-primary: #1a202c;
+            --text-secondary: #4a5568;
+        }
+        
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            background-image: linear-gradient(rgba(26, 32, 44, 0.9), rgba(26, 32, 44, 0.95)), url('https://placehold.co/1920x1080/000000/FFFFFF?text=aymen+foot');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        .card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        
+        .header-bg {
+            background-color: rgba(26, 32, 44, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .news-ticker-container {
+            background-color: var(--bg-secondary);
+            border-top: 1px solid var(--border-color);
+        }
+
+        .logo-font {
+            font-family: 'Reem Kufi', sans-serif;
+            text-shadow: 1px 1px 5px rgba(212, 175, 55, 0.6);
+        }
+        
+        .admin-input {
+            background-color: #1a202c;
+            color: var(--accent-gold);
+            border: 1px solid var(--accent-gold);
+            text-align: center;
+            border-radius: 5px;
+            padding: 2px;
+            width: 100%;
+        }
+        html.light .admin-input {
+             background-color: #edf2f7;
+        }
+    </style>
+</head>
+<body class="transition-colors duration-300">
+
+    <div id="admin-banner" class="hidden bg-yellow-500 text-black text-center font-bold p-2 transition-all cursor-pointer">
+        <!-- Admin message here -->
+    </div>
+
+    <!-- الشريط العلوي -->
+    <header class="header-bg sticky top-0 z-50">
+        <div class="container mx-auto px-4">
+            <nav class="flex items-center justify-between h-20">
+                <a href="#" id="logo-link" class="flex items-center space-x-3 rtl:space-x-reverse">
+                    <span class="text-3xl font-bold text-white logo-font">Aymen Foot</span>
+                </a>
+                <div class="hidden lg:flex items-center space-x-6 rtl:space-x-reverse text-lg">
+                    <a href="#matches" class="hover:text-yellow-400 transition-colors">المباريات</a>
+                    <a href="#standings" class="hover:text-yellow-400 transition-colors">الترتيب</a>
+                    <a href="#results" class="hover:text-yellow-400 transition-colors">النتائج</a>
+                    <a href="#" class="hover:text-yellow-400 transition-colors">الأخبار</a>
+                    <a href="#" class="hover:text-yellow-400 transition-colors">البث المباشر</a>
+                </div>
+                <div class="flex items-center space-x-2">
+                     <button id="theme-toggle" class="p-2 rounded-full hover:bg-gray-700">
+                        <svg id="theme-icon-sun" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                        <svg id="theme-icon-moon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                    </button>
+                    <a href="#" class="hidden sm:inline-block bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-2 px-5 rounded-full shadow-lg transition-transform transform hover:scale-105 duration-300">
+                        تابع مباشرة
+                    </a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container mx-auto p-4 md:p-8">
+
+        <!-- قسم المباريات القادمة -->
+        <section id="matches" class="mb-16">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-3xl font-bold text-white">المباريات القادمة</h2>
+                <button id="add-match-btn" class="hidden bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-md transition-colors">إضافة مباراة</button>
+            </div>
+            <div id="matches-container" class="grid grid-cols-1 md:grid-cols-2 gap-6 min-h-[100px]">
+                <!-- بطاقات المباريات تضاف هنا -->
+            </div>
+        </section>
+
+        <!-- قسم الترتيب -->
+        <section id="standings" class="mb-16">
+            <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
+                <div class="flex items-center gap-3">
+                    <h2 class="text-3xl font-bold text-white">جدول الترتيب</h2>
+                    <div id="league-round-container" class="bg-yellow-500 text-black text-sm font-bold px-3 py-1 rounded-full flex items-center">
+                        الجولة <span id="league-round" class="mx-1">1</span>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <select id="league-selector" class="appearance-none bg-gray-700 border border-gray-600 rounded-lg py-2 px-4 pr-8 text-white focus:outline-none focus:border-yellow-500">
+                        <!-- Options will be dynamically populated -->
+                    </select>
+                    <div id="admin-league-controls" class="hidden flex items-center gap-2">
+                        <button id="add-league-btn" class="bg-blue-500 p-2 rounded-md">➕</button>
+                        <button id="delete-league-btn" class="bg-red-500 p-2 rounded-md">🗑️</button>
+                    </div>
+                </div>
+            </div>
+            <div class="card rounded-lg shadow-xl overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-center">
+                        <thead class="bg-gray-800 text-gray-400 uppercase text-sm">
+                            <tr>
+                                <th class="py-4 px-2">#</th>
+                                <th class="py-4 px-4 text-right">الفريق</th>
+                                <th class="py-4 px-2">ل</th>
+                                <th class="py-4 px-2">ف</th>
+                                <th class="py-4 px-2">ت</th>
+                                <th class="py-4 px-2">خ</th>
+                                <th class="py-4 px-2">له/عليه</th>
+                                <th class="py-4 px-2 font-bold">نقاط</th>
+                                <th id="admin-actions-header" class="hidden py-4 px-2"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="standings-tbody" class="divide-y divide-gray-600">
+                           <!-- بيانات الترتيب تضاف هنا -->
+                        </tbody>
+                    </table>
+                </div>
+                 <div id="add-team-container" class="hidden p-4">
+                    <button id="add-team-btn" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-md transition-colors">إضافة فريق جديد</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- قسم النتائج الأخيرة -->
+        <section id="results" class="mb-16">
+            <div class="flex items-center justify-between mb-8">
+                 <h2 class="text-3xl font-bold text-white">النتائج الأخيرة</h2>
+            </div>
+            <div id="results-container" class="relative pr-8 timeline min-h-[100px]">
+               <!-- نتائج المباريات تضاف هنا -->
+            </div>
+        </section>
+
+    </main>
+
+    <!-- شريط الأخبار -->
+    <div class="news-ticker-container fixed bottom-0 left-0 w-full z-40">
+        <div class="container mx-auto flex items-center h-12">
+            <span class="bg-red-600 text-white font-bold text-sm px-3 py-1 rounded-md ml-4">عاجل</span>
+            <div class="overflow-hidden flex-1">
+                <p class="whitespace-nowrap animate-marquee">
+                    <span class="mx-6">تابع آخر أخبار كرة القدم لحظة بلحظة.</span>
+                    <span class="mx-6">يمكنك إضافة أخبارك هنا من خلال لوحة التحكم.</span>
+                </p>
+                <style>@keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } } .animate-marquee { display: inline-block; animation: marquee 20s linear infinite; }</style>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 mt-12 pt-20 pb-8">
+        <div class="container mx-auto text-center text-gray-400">
+             <div class="flex justify-center space-x-6 rtl:space-x-reverse mb-6">
+                <a href="#" class="hover:text-yellow-400">Facebook</a>
+                <a href="#" class="hover:text-yellow-400">Twitter</a>
+                <a href="#" class="hover:text-yellow-400">Instagram</a>
+            </div>
+            <p id="copyright-notice" class="cursor-pointer">جميع الحقوق محفوظة &copy; 2025 Aymen Foot</p>
+            <a href="#" class="hover:text-yellow-400">اتصل بنا</a>
+        </div>
+    </footer>
+    
+    <!-- Admin Login Modal -->
+    <div id="admin-modal" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
+        <div class="bg-gray-800 p-8 rounded-lg shadow-xl w-full max-w-sm">
+            <h3 class="text-2xl font-bold text-white mb-4 text-center">دخول الأدمن</h3>
+            <p class="text-gray-400 mb-6 text-center">الرجاء إدخال كلمة المرور</p>
+            <div class="space-y-4">
+                <input type="password" id="admin-password-input" class="w-full bg-gray-700 text-white rounded-md p-3 border border-gray-600 focus:outline-none focus:border-yellow-500" placeholder="••••••••">
+                <p id="modal-error-msg" class="text-red-500 text-sm text-center hidden">كلمة مرور خاطئة!</p>
+                <button id="admin-submit-btn" class="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-3 rounded-md transition-colors">دخول</button>
+                <button id="admin-cancel-btn" class="w-full bg-gray-600 hover:bg-gray-500 text-white font-bold py-3 rounded-md transition-colors">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        // --- State ---
+        let isAdmin = false;
+        let leaguesData = [];
+        let otherMatches = [];
+        let recentResults = [];
+        
+        // --- Data Persistence ---
+        function saveData() {
+            localStorage.setItem('aymenFootData', JSON.stringify({ leagues: leaguesData, matches: otherMatches, results: recentResults }));
+        }
+
+        function loadData() {
+            const savedData = JSON.parse(localStorage.getItem('aymenFootData'));
+            if (savedData) {
+                leaguesData = savedData.leagues || [];
+                otherMatches = savedData.matches || [];
+                recentResults = savedData.results || [];
+            }
+            if (leaguesData.length === 0) {
+                 leaguesData.push({ name: "الدوري الافتراضي", round: 1, teams: [] });
+            }
+        }
+
+        // --- Core Logic ---
+        function calculateStandings(leagueName) {
+            const league = leaguesData.find(l => l.name === leagueName);
+            if (!league) return [];
+
+            // Reset all team stats
+            league.teams.forEach(team => {
+                team.p = 0; team.w = 0; team.d = 0; team.l = 0;
+                team.gf = 0; team.ga = 0; team.pts = 0;
+            });
+
+            const leagueResults = recentResults.filter(r => r.leagueName === leagueName);
+
+            leagueResults.forEach(result => {
+                const team1 = league.teams.find(t => t.name === result.team1);
+                const team2 = league.teams.find(t => t.name === result.team2);
+                const score1 = parseInt(result.score1);
+                const score2 = parseInt(result.score2);
+
+                if (team1 && team2 && !isNaN(score1) && !isNaN(score2)) {
+                    team1.p++; team2.p++;
+                    team1.gf += score1; team1.ga += score2;
+                    team2.gf += score2; team2.ga += score1;
+
+                    if (score1 > score2) { // team1 wins
+                        team1.w++; team1.pts += 3; team2.l++;
+                    } else if (score2 > score1) { // team2 wins
+                        team2.w++; team2.pts += 3; team1.l++;
+                    } else { // draw
+                        team1.d++; team2.d++;
+                        team1.pts++; team2.pts++;
+                    }
+                }
+            });
+
+            league.teams.sort((a, b) => {
+                if (b.pts !== a.pts) return b.pts - a.pts; // Points
+                const gdA = a.gf - a.ga;
+                const gdB = b.gf - b.ga;
+                if (gdB !== gdA) return gdB - gdA; // Goal Difference
+                if (b.gf !== a.gf) return b.gf - a.gf; // Goals For
+                return a.name.localeCompare(b.name); // Alphabetical
+            });
+
+            return league.teams;
+        }
+
+        // --- Render Functions ---
+        function renderAll() {
+            const leagueSelector = document.getElementById('league-selector');
+            const selectedLeague = leagueSelector.value;
+            renderLeaguesDropdown();
+            // Ensure the previously selected league remains selected
+            if ([...leagueSelector.options].some(o => o.value === selectedLeague)) {
+                leagueSelector.value = selectedLeague;
+            }
+            renderMatches(isAdmin);
+            renderStandings(isAdmin);
+            renderResults(isAdmin);
+        }
+
+        function renderLeaguesDropdown() {
+            const selector = document.getElementById('league-selector');
+            selector.innerHTML = leaguesData.map(league => `<option>${league.name}</option>`).join('');
+        }
+
+        function renderMatches(isAdminView = false) {
+            const container = document.getElementById('matches-container');
+            const selectedLeague = document.getElementById('league-selector').value;
+            const leagueMatches = otherMatches.filter(m => m.leagueName === selectedLeague);
+
+            if (leagueMatches.length === 0 && !isAdminView) {
+                container.innerHTML = `<p class="text-gray-400 text-center col-span-full">لا توجد مباريات قادمة لهذا الدوري.</p>`;
+                return;
+            }
+            container.innerHTML = leagueMatches.map((match, index) => {
+                const originalIndex = otherMatches.findIndex(m => m.id === match.id);
+                const addResultBtn = isAdminView ? `<button class="bg-green-500 hover:bg-green-600 text-white text-xs px-2 py-1 rounded" onclick="convertToResult(${originalIndex})">أضف نتيجة</button>` : '';
+                return `
+                <div class="card relative rounded-lg p-4 flex items-center justify-between">
+                    <div class="absolute top-2 left-2 flex gap-2">
+                        ${isAdminView ? `<button class="text-red-500" onclick="deleteMatch(${originalIndex})">🗑️</button>` : ''}
+                    </div>
+                    <span class="font-bold w-1/3 text-center">${match.team1}</span>
+                    <div class="text-center">
+                        <div class="font-bold text-lg">${match.time}</div>
+                        <div class="text-xs text-gray-400">${match.date}</div>
+                        ${addResultBtn}
+                    </div>
+                    <span class="font-bold w-1/3 text-center">${match.team2}</span>
+                </div>`;
+            }).join('');
+        }
+        
+        function renderStandings(isAdminView = false) {
+            const leagueName = document.getElementById('league-selector').value;
+            const league = leaguesData.find(l => l.name === leagueName);
+            const tbody = document.getElementById('standings-tbody');
+            
+            if (!league) {
+                tbody.innerHTML = `<tr><td colspan="9" class="text-center py-8 text-gray-400">الرجاء اختيار دوري.</td></tr>`;
+                document.getElementById('league-round').textContent = "-";
+                return;
+            }
+
+            const roundSpan = document.getElementById('league-round');
+            if (isAdminView) {
+                roundSpan.innerHTML = `<input type="number" value="${league.round}" class="admin-input w-12" onchange="updateRound('${leagueName}', this.value)">`;
+            } else {
+                roundSpan.textContent = league.round;
+            }
+
+            const standings = calculateStandings(leagueName);
+
+            if (standings.length === 0 && !isAdminView) {
+                tbody.innerHTML = `<tr><td colspan="9" class="text-center py-8 text-gray-400">أضف فرقاً لهذا الدوري من وضع الأدمن.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = standings.map((team, index) => `
+                <tr class="hover:bg-gray-700">
+                    <td class="py-3 px-2 font-bold">${index + 1}</td>
+                    <td class="py-3 px-4 text-right">
+                        ${isAdminView ? `<input type="text" value="${team.name}" class="admin-input" onchange="updateTeamName('${leagueName}', ${index}, this.value)">` : team.name}
+                    </td>
+                    <td>${team.p}</td><td>${team.w}</td><td>${team.d}</td><td>${team.l}</td>
+                    <td>${team.gf}:${team.ga}</td>
+                    <td class="font-bold text-lg text-yellow-400">${team.pts}</td>
+                    ${isAdminView ? `<td><button class="text-red-500" onclick="deleteTeam('${leagueName}', ${index})">🗑️</button></td>` : ''}
+                </tr>`
+            ).join('');
+        }
+
+        function renderResults(isAdminView = false) {
+            const container = document.getElementById('results-container');
+            const selectedLeague = document.getElementById('league-selector').value;
+            const leagueResults = recentResults.filter(r => r.leagueName === selectedLeague);
+
+            if (leagueResults.length === 0 && !isAdminView) {
+                container.innerHTML = `<p class="text-gray-400 text-center">لا توجد نتائج لهذا الدوري.</p>`;
+                return;
+            }
+
+            container.innerHTML = leagueResults.map((result, index) => {
+                const originalIndex = recentResults.findIndex(r => r.id === result.id);
+                const scoreCell = isAdminView ?
+                    `<input type="number" value="${result.score1}" class="w-12 admin-input" onchange="updateResult(${originalIndex}, 'score1', this.value)" /> - <input type="number" value="${result.score2}" class="w-12 admin-input" onchange="updateResult(${originalIndex}, 'score2', this.value)" />` :
+                    `${result.score1} - ${result.score2}`;
+                
+                return `
+                <div class="mb-8 relative timeline-item pr-10">
+                    <div class="card relative rounded-lg p-4">
+                        ${isAdminView ? `<button class="absolute top-2 left-2 text-red-500" onclick="deleteResult(${originalIndex})">🗑️</button>` : ''}
+                        <div class="flex items-center justify-between">
+                            <span class="font-bold text-lg text-right w-2/5">${result.team1}</span>
+                            <div class="bg-gray-800 px-3 py-1 rounded-md text-2xl font-black">${scoreCell}</div>
+                            <span class="font-bold text-lg text-left w-2/5">${result.team2}</span>
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        // --- CRUD & Admin Functions ---
+        function addLeague() {
+            const name = prompt("ما هو اسم الدوري الجديد؟");
+            if (name && !leaguesData.find(l => l.name === name)) {
+                leaguesData.push({ name: name, round: 1, teams: [] });
+                saveData();
+                renderAll();
+            } else if (name) {
+                alert("هذا الاسم موجود بالفعل.");
+            }
+        }
+
+        function deleteLeague() {
+            const leagueName = document.getElementById('league-selector').value;
+            if (confirm(`هل أنت متأكد من حذف دوري "${leagueName}" وكل بياناته؟`)) {
+                leaguesData = leaguesData.filter(l => l.name !== leagueName);
+                otherMatches = otherMatches.filter(m => m.leagueName !== leagueName);
+                recentResults = recentResults.filter(r => r.leagueName !== leagueName);
+                if (leaguesData.length === 0) {
+                    leaguesData.push({ name: "الدوري الافتراضي", round: 1, teams: [] });
+                }
+                saveData();
+                renderAll();
+            }
+        }
+        
+        function updateRound(leagueName, newRound) {
+            const league = leaguesData.find(l => l.name === leagueName);
+            if (league) {
+                league.round = parseInt(newRound) || 1;
+                saveData();
+            }
+        }
+
+        function addMatch() {
+            const leagueName = document.getElementById('league-selector').value;
+            const league = leaguesData.find(l => l.name === leagueName);
+            if (!league) { alert("الرجاء اختيار دوري أولاً."); return; }
+
+            otherMatches.unshift({ id: Date.now(), leagueName, team1: 'فريق 1', team2: 'فريق 2', date: 'التاريخ', time: '00:00' });
+            saveData();
+            renderMatches(true);
+        }
+
+        function deleteMatch(index) {
+            otherMatches.splice(index, 1);
+            saveData();
+            renderMatches(true);
+        }
+        
+        function convertToResult(matchIndex) {
+            const match = otherMatches[matchIndex];
+            recentResults.unshift({
+                id: match.id,
+                leagueName: match.leagueName,
+                team1: match.team1,
+                team2: match.team2,
+                score1: 0,
+                score2: 0,
+            });
+            otherMatches.splice(matchIndex, 1);
+            saveData();
+            renderAll();
+        }
+
+        function addTeam() {
+            const leagueName = document.getElementById('league-selector').value;
+            const league = leaguesData.find(l => l.name === leagueName);
+            if (league) {
+                const teamName = prompt("ما هو اسم الفريق الجديد؟");
+                if (teamName && !league.teams.find(t => t.name === teamName)) {
+                    league.teams.push({ name: teamName });
+                    saveData();
+                    renderStandings(true);
+                } else if (teamName) {
+                    alert("هذا الفريق موجود بالفعل في الدوري.");
+                }
+            }
+        }
+        
+        function updateTeamName(leagueName, teamIndex, newName) {
+            const league = leaguesData.find(l => l.name === leagueName);
+            if (league && league.teams[teamIndex]) {
+                 const oldName = league.teams[teamIndex].name;
+                 // Update in matches and results as well
+                 otherMatches.forEach(m => {
+                    if (m.leagueName === leagueName) {
+                        if (m.team1 === oldName) m.team1 = newName;
+                        if (m.team2 === oldName) m.team2 = newName;
+                    }
+                 });
+                 recentResults.forEach(r => {
+                    if (r.leagueName === leagueName) {
+                        if (r.team1 === oldName) r.team1 = newName;
+                        if (r.team2 === oldName) r.team2 = newName;
+                    }
+                 });
+                league.teams[teamIndex].name = newName;
+                saveData();
+                renderAll();
+            }
+        }
+
+
+        function deleteTeam(leagueName, index) {
+            const league = leaguesData.find(l => l.name === leagueName);
+            if (league) {
+                league.teams.splice(index, 1);
+                saveData();
+                renderStandings(true);
+            }
+        }
+        
+        function updateResult(index, field, value) {
+            if (recentResults[index]) {
+                recentResults[index][field] = value;
+                saveData();
+                renderAll(); // Recalculate standings
+            }
+        }
+
+        function deleteResult(index) {
+            recentResults.splice(index, 1);
+            saveData();
+            renderAll(); // Recalculate standings
+        }
+
+        function setAdminMode(enabled) {
+            isAdmin = enabled;
+            const adminElements = ['admin-banner', 'add-match-btn', 'add-team-container', 'admin-actions-header', 'admin-league-controls'];
+            adminElements.forEach(id => {
+                document.getElementById(id)?.classList.toggle('hidden', !enabled);
+                document.getElementById(id)?.classList.toggle('flex', enabled && id === 'admin-league-controls');
+            });
+            
+            if(enabled) {
+                document.getElementById('admin-banner').textContent = 'وضع الأدمن مفعل (اضغط هنا للخروج)';
+                document.getElementById('admin-banner').addEventListener('click', handleAdminLogout);
+            } else {
+                 document.getElementById('admin-banner').removeEventListener('click', handleAdminLogout);
+            }
+            renderAll();
+        }
+
+        function showAdminModal() { document.getElementById('admin-modal').classList.remove('hidden'); document.getElementById('admin-password-input').focus(); }
+        function hideAdminModal() { document.getElementById('admin-modal').classList.add('hidden'); document.getElementById('admin-password-input').value = ''; }
+        function checkAdminPassword() {
+            if (document.getElementById('admin-password-input').value === '200411') setAdminMode(true), hideAdminModal();
+            else document.getElementById('modal-error-msg').classList.remove('hidden');
+        }
+        function handleAdminLogin() { if (!isAdmin) showAdminModal(); }
+        function handleAdminLogout() { setAdminMode(false); }
+
+        document.getElementById('theme-toggle').addEventListener('click', () => { document.documentElement.classList.toggle('light'); document.getElementById('theme-icon-sun').classList.toggle('hidden'); document.getElementById('theme-icon-moon').classList.toggle('hidden'); });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadData();
+            renderAll();
+            document.getElementById('copyright-notice').addEventListener('click', handleAdminLogin);
+            document.getElementById('admin-submit-btn').addEventListener('click', checkAdminPassword);
+            document.getElementById('admin-cancel-btn').addEventListener('click', hideAdminModal);
+            document.getElementById('admin-password-input').addEventListener('keyup', e => e.key === 'Enter' && checkAdminPassword());
+            document.getElementById('add-match-btn').addEventListener('click', addMatch);
+            document.getElementById('add-team-btn').addEventListener('click', addTeam);
+            document.getElementById('add-league-btn').addEventListener('click', addLeague);
+            document.getElementById('delete-league-btn').addEventListener('click', deleteLeague);
+            document.getElementById('league-selector').addEventListener('change', renderAll);
+        });
+    </script>
+</body>
+</html>
+
