@@ -262,7 +262,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getFirestore, doc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
         
         let isAdmin = false;
         let data = {};
@@ -296,6 +296,9 @@
                     data = { leagues: [{ name: "الدوري الافتراضي", currentRound: 0, lastResultsRound: 0, teams: [], schedule: {} }], news: ["مرحباً بك في موقع Aymen Foot الرياضي!"] };
                 }
                 renderAll();
+                if (!document.getElementById('control-panel-modal').classList.contains('hidden')) {
+                    renderControlPanel();
+                }
             });
         }
         
@@ -309,7 +312,7 @@
             league.teams.forEach(t => { t.p=0; t.w=0; t.d=0; t.l=0; t.gf=0; t.ga=0; t.pts=0; });
             for (const roundNum in league.schedule) {
                 league.schedule[roundNum].forEach(match => {
-                    if (match.status && match.status !== 'normal') return; // Skip postponed/stopped matches
+                    if (match.status && match.status !== 'normal') return; 
                     const s1 = parseInt(match.score1), s2 = parseInt(match.score2);
                     if (isNaN(s1) || isNaN(s2)) return;
                     const t1 = league.teams.find(t => t.name === match.team1);
@@ -325,7 +328,6 @@
             return league.teams;
         }
 
-        // --- Render Functions ---
         function renderAll() {
             const selectedLeague = document.getElementById('league-selector').value || (data.leagues[0] ? data.leagues[0].name : '');
             renderLeaguesDropdown(selectedLeague);
@@ -422,7 +424,6 @@
             container.innerHTML = `<p class="whitespace-nowrap animate-marquee">${newsHtml}</p><style>@keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } } .animate-marquee { display: inline-block; animation: marquee ${data.news.length * 15}s linear infinite; }</style>`;
         }
         
-        // --- Admin Panel Render ---
         function renderControlPanel() {
             const leagueSelector = document.getElementById('admin-league-selector');
             leagueSelector.innerHTML = data.leagues.map(l => `<option>${l.name}</option>`).join('');
@@ -473,14 +474,13 @@
                 <div class="flex justify-between items-center bg-gray-700 p-2 rounded"><span>${item}</span><button onclick="app.deleteNews(${index})" class="text-red-500">🗑️</button></div>`).join('');
         }
 
-        // --- CRUD & Admin Functions ---
         window.app = {
             addLeague: () => { const n=prompt("اسم الدوري؟"); if(n&&!getLeague(n)){ data.leagues.push({name:n, currentRound:0, lastResultsRound:0, teams:[], schedule:{}}); saveData(); } },
             deleteLeague: () => { const n=document.getElementById('admin-league-selector').value; if(confirm(`تأكيد حذف دوري "${n}"؟`)){ data.leagues = data.leagues.filter(l => l.name !== n); saveData(); } },
             addTeam: () => { const n=prompt("اسم الفريق؟"); const l=getLeague(document.getElementById('admin-league-selector').value); if(n&&l&&!l.teams.find(t=>t.name===n)){ l.teams.push({name: n, logo: ''}); saveData(); } },
             updateTeam: (i, f, v) => { const l=getLeague(document.getElementById('admin-league-selector').value); const oldN=l.teams[i].name; l.teams[i][f]=v; if(f==='name'){ for(const r in l.schedule){ l.schedule[r].forEach(m=>{ if(m.team1===oldN)m.team1=v; if(m.team2===oldN)m.team2=v; }); } } saveData(); },
             deleteTeam: (i) => { const l=getLeague(document.getElementById('admin-league-selector').value); l.teams.splice(i, 1); saveData(); },
-            addRound: () => { const l=getLeague(document.getElementById('admin-league-selector').value); const maxR=Math.max(0,...Object.keys(l.schedule || {}).map(Number)); if(!l.schedule) l.schedule = {}; l.schedule[maxR+1]=[]; saveData(); renderAdminPanelForLeague(l.name); },
+            addRound: () => { const l=getLeague(document.getElementById('admin-league-selector').value); const maxR=Math.max(0,...Object.keys(l.schedule || {}).map(Number)); if(!l.schedule) l.schedule = {}; l.schedule[maxR+1]=[]; saveData(); },
             addMatch: () => { const lN=document.getElementById('admin-league-selector').value, rN=document.getElementById('admin-round-selector').value; const l=getLeague(lN); const t1=document.getElementById('admin-team1-select').value, t2=document.getElementById('admin-team2-select').value; if(t1===t2){alert("لا يمكن للفريق اللعب ضد نفسه");return;} l.schedule[rN].push({id:Date.now(), team1:t1, team2:t2, time:document.getElementById('admin-match-time').value, date:document.getElementById('admin-match-date').value, score1:null, score2:null, status: 'normal'}); saveData(); },
             deleteMatch: (r, i) => { getLeague(document.getElementById('admin-league-selector').value).schedule[r].splice(i, 1); saveData(); },
             updateScore: (r, i, s, v) => { getLeague(document.getElementById('admin-league-selector').value).schedule[r][i][s]=v; saveData(); },
@@ -508,8 +508,18 @@
             try {
                 const app = initializeApp(firebaseConfig);
                 db = getFirestore(app);
-                signInAnonymously(getAuth(app));
-                setupRealtimeListener();
+                const auth = getAuth(app);
+                onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        // User is signed in anonymously.
+                        setupRealtimeListener();
+                    } else {
+                        // User is signed out.
+                        signInAnonymously(auth).catch((error) => {
+                            console.error("Anonymous sign-in failed:", error);
+                        });
+                    }
+                });
             } catch (e) {
                 console.error("Firebase init failed:", e);
                 alert("فشل الاتصال بقاعدة البيانات.");
