@@ -231,8 +231,8 @@
                     <select id="admin-team1-select" class="flex-grow bg-gray-700 text-white rounded p-2 border border-gray-600"></select>
                     <span class="font-bold">vs</span>
                     <select id="admin-team2-select" class="flex-grow bg-gray-700 text-white rounded p-2 border border-gray-600"></select>
-                    <input type="text" id="admin-match-time-new" class="w-20 bg-gray-700 text-white rounded p-2 border border-gray-600" value="00:00">
-                    <input type="text" id="admin-match-date-new" class="w-28 bg-gray-700 text-white rounded p-2 border border-gray-600" placeholder="التاريخ">
+                    <input type="text" id="admin-match-time" class="w-20 bg-gray-700 text-white rounded p-2 border border-gray-600" value="00:00">
+                    <input type="text" id="admin-match-date" class="w-28 bg-gray-700 text-white rounded p-2 border border-gray-600" placeholder="التاريخ">
                     <button id="admin-add-match-btn" class="bg-green-600 text-white p-2 rounded">إضافة</button>
                 </div>
             </div>
@@ -521,18 +521,15 @@
             const matchesList = document.getElementById('admin-matches-list');
             if (!league || !roundNum || !league.schedule[roundNum]) { matchesList.innerHTML = ''; return; }
             matchesList.innerHTML = league.schedule[roundNum].map((match, index) => `
-                <div class="flex flex-wrap gap-2 items-center text-sm p-2 bg-gray-900 rounded">
-                    <span class="w-full sm:w-auto sm:flex-1 font-semibold">${match.team1} vs ${match.team2}</span>
-                    <input type="text" value="${match.date || ''}" onchange="app.updateMatchValue(${roundNum}, ${index}, 'date', this.value)" class="w-24 p-1 bg-gray-700 rounded" placeholder="التاريخ">
-                    <input type="text" value="${match.time || ''}" onchange="app.updateMatchValue(${roundNum}, ${index}, 'time', this.value)" class="w-16 p-1 bg-gray-700 rounded" placeholder="الوقت">
-                    <input type="number" value="${match.score1 ?? ''}" onchange="app.updateScore(${roundNum}, ${index}, 'score1', this.value)" class="w-12 p-1 bg-gray-700 rounded">
-                    <span>-</span>
-                    <input type="number" value="${match.score2 ?? ''}" onchange="app.updateScore(${roundNum}, ${index}, 'score2', this.value)" class="w-12 p-1 bg-gray-700 rounded">
-                     <select onchange="app.updateMatchValue(${roundNum}, ${index}, 'status', this.value)" class="p-1 bg-gray-700 rounded">
+                <div class="flex gap-2 items-center text-sm p-2 bg-gray-900 rounded">
+                    <span class="flex-1">${match.team1} vs ${match.team2}</span>
+                    <select onchange="app.updateMatchStatus(${roundNum}, ${index}, this.value)" class="p-1 bg-gray-700 rounded">
                         <option value="normal" ${!match.status || match.status === 'normal' ? 'selected' : ''}>عادي</option>
                         <option value="postponed" ${match.status === 'postponed' ? 'selected' : ''}>مؤجلة</option>
                         <option value="stopped" ${match.status === 'stopped' ? 'selected' : ''}>متوقفة</option>
                     </select>
+                    <input type="number" value="${match.score1 ?? ''}" onchange="app.updateScore(${roundNum}, ${index}, 'score1', this.value)" class="w-12 p-1 bg-gray-700 rounded">
+                    <input type="number" value="${match.score2 ?? ''}" onchange="app.updateScore(${roundNum}, ${index}, 'score2', this.value)" class="w-12 p-1 bg-gray-700 rounded">
                     <button onclick="app.deleteMatch(${roundNum}, ${index})" class="text-red-500 p-1 hover:bg-red-500 hover:text-white rounded-full">🗑️</button>
                 </div>`).join('');
         }
@@ -605,10 +602,10 @@
             updateTeam: (index, field, value) => { const league = getLeague(document.getElementById('admin-league-selector').value); const oldName = league.teams[index].name; league.teams[index][field] = value; if (field === 'name') { for (const round in league.schedule) { league.schedule[round].forEach(match => { if (match.team1 === oldName) match.team1 = value; if (match.team2 === oldName) match.team2 = value; }); } } saveData(); },
             deleteTeam: (index) => { const league = getLeague(document.getElementById('admin-league-selector').value); showCustomConfirm(`هل أنت متأكد من حذف فريق "${league.teams[index].name}"؟`, confirmed => { if(confirmed) { league.teams.splice(index, 1); saveData(); }}); },
             addRound: () => { const league = getLeague(document.getElementById('admin-league-selector').value); const maxRound = Math.max(0, ...Object.keys(league.schedule || {}).map(Number)); if (!league.schedule) league.schedule = {}; league.schedule[maxRound + 1] = []; saveData(); },
-            addMatch: () => { const leagueName = document.getElementById('admin-league-selector').value, roundNum = document.getElementById('admin-round-selector').value; const league = getLeague(leagueName); const t1 = document.getElementById('admin-team1-select').value, t2 = document.getElementById('admin-team2-select').value; if (t1 === t2) { showCustomAlert("لا يمكن للفريق اللعب ضد نفسه."); return; } league.schedule[roundNum].push({ id: Date.now(), team1: t1, team2: t2, time: document.getElementById('admin-match-time-new').value, date: document.getElementById('admin-match-date-new').value, score1: null, score2: null, status: 'normal' }); saveData(); },
+            addMatch: () => { const leagueName = document.getElementById('admin-league-selector').value, roundNum = document.getElementById('admin-round-selector').value; const league = getLeague(leagueName); const t1 = document.getElementById('admin-team1-select').value, t2 = document.getElementById('admin-team2-select').value; if (t1 === t2) { showCustomAlert("لا يمكن للفريق اللعب ضد نفسه."); return; } league.schedule[roundNum].push({ id: Date.now(), team1: t1, team2: t2, time: document.getElementById('admin-match-time').value, date: document.getElementById('admin-match-date').value, score1: null, score2: null, status: 'normal' }); saveData(); },
             deleteMatch: (round, index) => { showCustomConfirm("هل أنت متأكد من حذف هذه المباراة؟", confirmed => { if(confirmed) { getLeague(document.getElementById('admin-league-selector').value).schedule[round].splice(index, 1); saveData(); }}); },
             updateScore: (round, index, scoreField, value) => { const league = getLeague(document.getElementById('admin-league-selector').value); league.schedule[round][index][scoreField] = value; league.schedule[round][index].status = 'normal'; saveData(); },
-            updateMatchValue: (r, i, field, value) => { getLeague(document.getElementById('admin-league-selector').value).schedule[r][i][field] = value; saveData(); },
+            updateMatchStatus: (r, i, status) => { getLeague(document.getElementById('admin-league-selector').value).schedule[r][i]['status'] = status; saveData(); },
             setUpcoming: () => { const league = getLeague(document.getElementById('admin-league-selector').value); league.currentRound = document.getElementById('admin-round-selector').value; saveData(); showCustomAlert("تم تحديد الجولة القادمة بنجاح."); },
             setResults: () => { const league = getLeague(document.getElementById('admin-league-selector').value); league.lastResultsRound = document.getElementById('admin-round-selector').value; saveData(); showCustomAlert("تم تحديد جولة النتائج الأخيرة بنجاح."); },
             addNews: () => { const input = document.getElementById('admin-news-input'); if (input.value) { if (!data.news) data.news = []; data.news.unshift(input.value.trim()); input.value = ''; saveData(); } },
