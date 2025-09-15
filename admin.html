@@ -158,11 +158,11 @@
                     </div>
                     <div id="date-time-fields" class="hidden">
                         <div>
-                            <label for="date" class="block text-sm font-medium mb-1">التاريخ:</label>
+                            <label for="date" class="block text-sm font-sm font-medium mb-1">التاريخ:</label>
                             <input type="date" id="date" class="input-field">
                         </div>
                         <div>
-                            <label for="time" class="block text-sm font-medium mb-1">الوقت:</label>
+                            <label for="time" class="block text-sm font-sm font-medium mb-1">الوقت:</label>
                             <input type="time" id="time" class="input-field">
                         </div>
                     </div>
@@ -497,7 +497,16 @@
                 league: document.getElementById('team-league').value,
             };
 
-            allData.teams.push(newTeam);
+            const response = await fetch(API_URL);
+            const existingData = await response.json();
+            
+            if (existingData && existingData.teams) {
+                existingData.teams.push(newTeam);
+                allData.teams = existingData.teams;
+            } else {
+                allData.teams.push(newTeam);
+            }
+
             const success = await updateData();
             if (success) {
                 alert('تم إضافة الفريق بنجاح.');
