@@ -147,21 +147,39 @@
                 <!-- Teams will be displayed here -->
             </div>
         </section>
+        
+        <!-- Manage Leagues Section -->
+        <section class="lg:col-span-2 bg-card p-8 rounded-2xl border border-gray-700">
+            <h2 class="text-2xl font-bold mb-6">إدارة الدوريات</h2>
+            <form id="add-league-form" class="space-y-4 mb-8">
+                <div>
+                    <label for="new-league" class="block text-sm font-medium mb-1">اسم الدوري الجديد:</label>
+                    <input type="text" id="new-league" class="input-field w-full" required>
+                </div>
+                <button type="submit" class="btn w-full">إضافة دوري</button>
+            </form>
+            <div id="leagues-list" class="space-y-4">
+                <h3 class="text-xl font-bold mb-4">الدوريات الموجودة</h3>
+                <!-- Leagues will be displayed here -->
+            </div>
+        </section>
     </main>
 
     <script>
         const API_URL = 'https://api.npoint.io/085b34b3a65fed878377';
         const addMatchForm = document.getElementById('add-match-form');
         const addTeamForm = document.getElementById('add-team-form');
+        const addLeagueForm = document.getElementById('add-league-form');
         const leagueSelects = document.querySelectorAll('#league, #team-league');
         const team1Select = document.getElementById('team1');
         const team2Select = document.getElementById('team2');
         const matchTypeRadios = document.getElementsByName('match-type');
         const scoreFields = document.getElementById('score-fields');
         const dateTimeFields = document.getElementById('date-time-fields');
-        const roundFields = document.getElementById('round-fields');
         const teamsList = document.getElementById('teams-list');
         const matchesList = document.getElementById('matches-list');
+        const leaguesList = document.getElementById('leagues-list');
+        const newLeagueInput = document.getElementById('new-league');
 
         let allData = { leagues: [], teams: [], matches: [] };
         let editingMatchId = null;
@@ -185,6 +203,7 @@
             updateTeamFilters();
             renderTeamsList();
             renderMatchesList();
+            renderLeaguesList();
         }
 
         async function updateData(data) {
@@ -284,6 +303,22 @@
             });
         }
 
+        function renderLeaguesList() {
+            leaguesList.innerHTML = '<h3 class="text-xl font-bold mb-4">الدوريات الموجودة</h3>';
+            allData.leagues.forEach(league => {
+                const leagueDiv = document.createElement('div');
+                leagueDiv.className = 'bg-gray-800 p-4 rounded-lg flex justify-between items-center';
+                leagueDiv.innerHTML = `
+                    <span class="font-bold">${league}</span>
+                    <div class="flex gap-2">
+                        <button data-league-name="${league}" class="edit-league-btn text-blue-500 hover:text-blue-700">تعديل</button>
+                        <button data-league-name="${league}" class="delete-league-btn text-red-500 hover:text-red-700">حذف</button>
+                    </div>
+                `;
+                leaguesList.appendChild(leagueDiv);
+            });
+        }
+        
         matchTypeRadios.forEach(radio => {
             radio.addEventListener('change', (e) => {
                 if (e.target.value === 'finished') {
@@ -302,6 +337,8 @@
         addMatchForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const matchType = document.querySelector('input[name="match-type"]:checked').value;
+            let updatedMatches = [...allData.matches];
+
             const newMatch = {
                 id: editingMatchId || Date.now(),
                 team1: document.getElementById('team1').value,
@@ -320,14 +357,14 @@
             }
 
             if (editingMatchId) {
-                const index = allData.matches.findIndex(m => m.id === editingMatchId);
+                const index = updatedMatches.findIndex(m => m.id === editingMatchId);
                 if (index !== -1) {
-                    allData.matches[index] = newMatch;
+                    updatedMatches[index] = newMatch;
                 }
             } else {
-                allData.matches.push(newMatch);
+                updatedMatches.push(newMatch);
             }
-
+            allData.matches = updatedMatches;
             await updateData(allData);
             addMatchForm.reset();
             editingMatchId = null;
@@ -340,10 +377,42 @@
                 logo: document.getElementById('team-logo').value,
                 league: document.getElementById('team-league').value,
             };
-            allData.teams.push(newTeam);
+            let updatedTeams = [...allData.teams];
+            updatedTeams.push(newTeam);
+            allData.teams = updatedTeams;
             await updateData(allData);
             addTeamForm.reset();
-            renderTeamsList();
+        });
+        
+        addLeagueForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const newLeagueName = newLeagueInput.value;
+            if (newLeagueName && !allData.leagues.includes(newLeagueName)) {
+                let updatedLeagues = [...allData.leagues];
+                updatedLeagues.push(newLeagueName);
+                allData.leagues = updatedLeagues;
+                await updateData(allData);
+                newLeagueInput.value = '';
+            }
+        });
+
+        leaguesList.addEventListener('click', async (e) => {
+            if (e.target.classList.contains('delete-league-btn')) {
+                const leagueToDelete = e.target.dataset.leagueName;
+                allData.leagues = allData.leagues.filter(l => l !== leagueToDelete);
+                allData.teams = allData.teams.filter(t => t.league !== leagueToDelete);
+                allData.matches = allData.matches.filter(m => m.league !== leagueToDelete);
+                await updateData(allData);
+            } else if (e.target.classList.contains('edit-league-btn')) {
+                const oldName = e.target.dataset.leagueName;
+                const newName = prompt(`تعديل اسم الدوري "${oldName}":`, oldName);
+                if (newName && newName !== oldName) {
+                    allData.leagues = allData.leagues.map(l => l === oldName ? newName : l);
+                    allData.teams = allData.teams.map(t => t.league === oldName ? { ...t, league: newName } : t);
+                    allData.matches = allData.matches.map(m => m.league === oldName ? { ...m, league: newName } : m);
+                    await updateData(allData);
+                }
+            }
         });
 
         teamsList.addEventListener('click', async (e) => {
