@@ -11,416 +11,319 @@
             font-family: 'Cairo', sans-serif;
             background-color: #0d1117;
             color: #ffffff;
-            overflow-x: hidden;
         }
-        .container {
-            padding: 2rem;
-            width: 100%;
-        }
-        .header-title {
-            text-align: center;
-            font-size: 3rem;
-            font-weight: bold;
+        .text-green-500 {
             color: #2ecc71;
-            margin-bottom: 2rem;
         }
-        .card {
+        .bg-card {
             background-color: #1a202c;
-            border-radius: 1rem;
-            padding: 1.5rem;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
-        .btn-group .btn {
+        .filter-btn {
             background-color: #2d3748;
             color: #a0aec0;
-            font-weight: bold;
-            padding: 0.75rem 1.5rem;
-            border-radius: 9999px;
             transition: all 0.3s ease;
             cursor: pointer;
         }
-        .btn-group .btn.active {
+        .filter-btn.active {
             background-color: #2ecc71;
             color: #ffffff;
         }
-        .league-table th, .league-table td {
-            text-align: right;
-            padding: 0.75rem;
-            border-bottom: 1px solid #2d3748;
-        }
-        .league-table th {
-            font-size: 0.9rem;
-            color: #a0aec0;
-        }
-        .team-cell {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-        .match-card {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem 1.5rem;
-        }
-        .team-info {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .team-info img {
-            width: 3rem;
-            height: 3rem;
-            object-fit: contain;
-        }
-        .score {
-            font-size: 2.5rem;
-            font-weight: bold;
-            color: #2ecc71;
-            margin: 0 1rem;
-        }
-        .match-status {
-            font-size: 0.8rem;
-            color: #a0aec0;
+        .striped-table-row:nth-child(even) {
+            background-color: #1f2a37;
         }
         .divider {
             height: 1px;
             background-color: #2d3748;
             margin: 2rem 0;
         }
-        @keyframes scroll {
-            0% { transform: translateX(100%); }
-            100% { transform: translateX(-100%); }
+        .league-table th, .league-table td {
+            padding: 0.75rem;
+            text-align: center;
         }
-        .news-ticker {
+        .league-table th {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #a0aec0;
+        }
+        .league-table td {
+            font-size: 0.9rem;
+        }
+        .team-cell {
             white-space: nowrap;
-            overflow: hidden;
-            background-color: #1a202c;
-            padding: 0.5rem 0;
-            border-radius: 0.5rem;
-            margin-bottom: 2rem;
-        }
-        .news-ticker-content {
-            display: inline-block;
-            animation: scroll 30s linear infinite;
-        }
-        .news-item {
-            display: inline-block;
-            margin-left: 2rem;
-        }
-        .news-list-item {
             display: flex;
             align-items: center;
-            gap: 1rem;
-            padding: 0.5rem 0;
+            justify-content: flex-end;
+            gap: 0.5rem;
+        }
+        .match-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .match-info {
+            flex-grow: 1;
+        }
+        .match-score {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #2ecc71;
         }
     </style>
 </head>
-<body>
-    <div class="container">
-        <header class="header-title">
-            <h1 class="text-5xl">AYMEN FOOT</h1>
-        </header>
+<body class="p-6 md:p-12">
 
-        <main class="grid grid-cols-1 lg:grid-cols-2 gap-10">
-            <!-- Left Sidebar for Table -->
-            <section class="lg:col-span-1 space-y-8">
-                <section class="card">
-                    <h2 class="text-2xl font-bold mb-4 text-center">ترتيب الدوريات</h2>
-                    <div class="flex justify-center mb-6">
-                        <select id="league-select" class="bg-gray-700 text-white rounded-full px-4 py-2 font-semibold cursor-pointer">
-                            <option value="المحترف الأول موبيليس">المحترف الأول موبيليس</option>
-                            <option value="المحترف الثاني - غرب">المحترف الثاني - غرب</option>
-                            <option value="المحترف الثاني - شرق">المحترف الثاني - شرق</option>
-                            <option value="القسم الوطني الثالث - شرق">القسم الوطني الثالث - شرق</option>
-                            <option value="القسم الوطني الثالث - وسط شرق">القسم الوطني الثالث - وسط شرق</option>
-                            <option value="القسم الوطني الثالث - وسط غرب">القسم الوطني الثالث - وسط غرب</option>
-                            <option value="القسم الوطني الثالث - غرب">القسم الوطني الثالث - غرب</option>
-                            <option value="القسم الوطني الثالث - الجنوب الشرقي">القسم الوطني الثالث - الجنوب الشرقي</option>
-                        </select>
-                    </div>
-                    <div id="standings-table-container">
-                        <!-- Table will be injected here -->
-                    </div>
-                </section>
+    <!-- Header -->
+    <header class="flex items-center justify-center mb-12">
+        <h1 class="text-5xl font-bold text-green-500">AYMEN FOOT</h1>
+    </header>
 
-                <section class="card">
-                    <h2 class="text-2xl font-bold mb-4 text-center">أحدث الأخبار</h2>
-                    <div id="news-list" class="space-y-4">
-                        <!-- News will be injected here -->
-                    </div>
-                </section>
-            </section>
+    <!-- Main Content Grid -->
+    <main class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+        <!-- Main Matches Section -->
+        <section class="lg:col-span-2">
+            <!-- Filters Section -->
+            <div class="space-y-4 mb-6">
+                <div>
+                    <select id="league-select" class="bg-card px-4 py-2 rounded-full font-semibold">
+                        <!-- Leagues will be dynamically added here -->
+                    </select>
+                </div>
+            </div>
 
-            <!-- Main Content for Matches -->
-            <section class="lg:col-span-1 space-y-8">
-                <div class="news-ticker">
-                    <div class="news-ticker-content">
-                        <span class="news-item font-bold">عاجل:</span> <span class="news-item">برشلونة يحقق فوزًا ساحقًا على ريال مدريد في الكلاسيكو.</span>
-                        <span class="news-item font-bold">عاجل:</span> <span class="news-item">تصريحات مثيرة من مدرب ليفربول بعد هزيمة مفاجئة.</span>
-                        <span class="news-item font-bold">عاجل:</span> <span class="news-item">ميسي يتحدث عن مستقبله بعد كأس العالم.</span>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="col-span-1">
+                    <h2 class="text-3xl font-bold mb-6">نتائج</h2>
+                    <div id="finished-matches-list" class="space-y-4">
+                        <p class="text-center text-gray-400">جاري تحميل المباريات...</p>
                     </div>
                 </div>
 
-                <section class="card">
-                    <h2 class="text-2xl font-bold mb-4 text-center" id="matches-title">نتائج المباريات</h2>
-                    <div id="finished-matches-list" class="space-y-4">
-                        <!-- Finished matches will be injected here -->
-                    </div>
-                </section>
-
-                <div class="divider"></div>
-
-                <section class="card">
-                    <h2 class="text-2xl font-bold mb-4 text-center">المباريات القادمة</h2>
+                <div class="col-span-1">
+                    <h3 class="text-3xl font-bold mb-4">المباريات القادمة</h3>
                     <div id="upcoming-matches-list" class="space-y-4">
-                        <!-- Upcoming matches will be injected here -->
+                        <p class="text-center text-gray-400">جاري تحميل المباريات...</p>
                     </div>
-                </section>
-            </section>
-        </main>
-    </div>
+                </div>
+            </div>
 
+            <div class="divider"></div>
+
+            <div id="league-standings-container" class="mb-8">
+                <!-- League standings table will be injected here by JS -->
+            </div>
+            
+        </section>
+
+        <!-- Sidebar Section (now on the right) -->
+        <aside class="lg:col-span-1 space-y-10">
+            <div class="bg-card p-6 rounded-2xl border border-gray-700">
+                <h3 class="text-2xl font-bold mb-4 text-green-500">أحدث الأخبار</h3>
+                <!-- News content will be injected here by JS -->
+            </div>
+        </aside>
+    </main>
+    
     <script>
+        // Replace with your actual npoint.io endpoints
         const API_URL = 'https://api.npoint.io/085b34b3a65fed878377';
-        
-        let allTeams = [];
-        let allMatches = [];
+
         const leagueSelect = document.getElementById('league-select');
-        const standingsTableContainer = document.getElementById('standings-table-container');
+        const leagueStandingsContainer = document.getElementById('league-standings-container');
         const finishedMatchesList = document.getElementById('finished-matches-list');
         const upcomingMatchesList = document.getElementById('upcoming-matches-list');
-        const newsList = document.getElementById('news-list');
-        
-        // Mock news data
-        const newsData = [
-            { title: "ليفربول يعلن عن تعاقد جديد مع موهبة شابة", image: "https://placehold.co/40x40/1a202c/ffffff?text=N1" },
-            { title: "المدرب يواجه انتقادات حادة بعد الخسارة الأخيرة", image: "https://placehold.co/40x40/1a202c/ffffff?text=N2" },
-            { title: "تصريحات مثيرة من ميسي عن مستقبله الكروي", image: "https://placehold.co/40x40/1a202c/ffffff?text=N3" }
-        ];
+        const newsSection = document.getElementById('news-section');
+
+        let allData = { leagues: [], teams: [], matches: [] };
 
         async function fetchData() {
             try {
                 const response = await fetch(API_URL);
-                if (!response.ok) throw new Error('Failed to fetch data');
-                const data = await response.json();
-
-                allTeams = data.teams || [];
-                allMatches = data.matches || [];
-
-                const defaultLeague = leagueSelect.value;
-                updateContent(defaultLeague);
-                renderNews();
-
+                if (!response.ok) {
+                    if (response.status === 404) {
+                        allData = { leagues: [], teams: [], matches: [] };
+                    } else {
+                        throw new Error('فشل في تحميل البيانات');
+                    }
+                } else {
+                    allData = await response.json();
+                }
+                if (!allData.leagues) allData.leagues = [];
+                if (!allData.teams) allData.teams = [];
+                if (!allData.matches) allData.matches = [];
+                
+                updateLeagueSelects();
+                renderUI(allData.leagues[0]);
             } catch (error) {
                 console.error('Error fetching data:', error);
-            }
-        }
-        
-        function updateContent(selectedLeague) {
-            const leagueTeams = allTeams.filter(team => team.league === selectedLeague);
-            const leagueMatches = allMatches.filter(match => match.league === selectedLeague);
-            
-            updateStandingsTable(leagueTeams, leagueMatches, selectedLeague);
-            updateMatchesList(leagueMatches);
-        }
-        
-        function updateStandingsTable(teams, matches, leagueName) {
-            const standings = calculateStandings(teams, matches);
-            
-            let html = `
-                <table class="w-full league-table">
-                    <thead>
-                        <tr>
-                            <th class="text-right">المركز</th>
-                            <th class="text-right">الفريق</th>
-                            <th class="text-center">لعب</th>
-                            <th class="text-center">النقاط</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-            `;
-            
-            standings.forEach(standing => {
-                const teamData = allTeams.find(t => t.name === standing.team);
-                const logoUrl = teamData ? teamData.logo : 'https://placehold.co/40x40/1a202c/ffffff?text=Logo';
                 
-                html += `
-                    <tr>
-                        <td class="font-bold">${standing.rank}</td>
-                        <td class="team-cell">
-                            <img src="${logoUrl}" alt="${standing.team}" class="w-8 h-8 rounded-full" />
-                            <span>${standing.team}</span>
-                        </td>
-                        <td>${standing.played}</td>
-                        <td class="text-green-500 font-bold">${standing.points}</td>
-                    </tr>
-                `;
-            });
-            
-            html += `
-                    </tbody>
-                </table>
-            `;
-            
-            standingsTableContainer.innerHTML = html || '<p class="text-center text-gray-400">لا توجد فرق في هذا الدوري بعد.</p>';
-        }
-
-        function updateMatchesList(matches) {
-            const finishedMatches = matches.filter(match => match.status === 'finished');
-            const upcomingMatches = matches.filter(match => match.status === 'upcoming');
-            
-            renderFinishedMatches(finishedMatches);
-            renderUpcomingMatches(upcomingMatches);
-        }
-
-        function renderFinishedMatches(finishedMatches) {
-            finishedMatchesList.innerHTML = '';
-            if (finishedMatches.length === 0) {
-                finishedMatchesList.innerHTML = '<p class="text-center text-gray-400">لا توجد نتائج بعد.</p>';
             }
-            
-            finishedMatches.forEach(match => {
-                const team1Data = allTeams.find(t => t.name === match.team1);
-                const team2Data = allTeams.find(t => t.name === match.team2);
-
-                const team1Logo = team1Data ? team1Data.logo : 'https://placehold.co/40x40/1a202c/ffffff?text=Logo';
-                const team2Logo = team2Data ? team2Data.logo : 'https://placehold.co/40x40/1a202c/ffffff?text=Logo';
-
-                const matchCard = document.createElement('div');
-                matchCard.className = 'card match-card';
-                matchCard.innerHTML = `
-                    <div class="team-info">
-                        <img src="${team1Logo}" alt="${match.team1}">
-                        <span class="mt-2 text-sm">${match.team1}</span>
-                    </div>
-                    <div class="flex items-center">
-                        <span class="score">${match.score1}</span>
-                        <span class="text-xl mx-2">-</span>
-                        <span class="score">${match.score2}</span>
-                    </div>
-                    <div class="team-info">
-                        <img src="${team2Logo}" alt="${match.team2}">
-                        <span class="mt-2 text-sm">${match.team2}</span>
-                    </div>
-                `;
-                finishedMatchesList.appendChild(matchCard);
-            });
         }
 
-        function renderUpcomingMatches(upcomingMatches) {
-            upcomingMatchesList.innerHTML = '';
-            if (upcomingMatches.length === 0) {
-                upcomingMatchesList.innerHTML = '<p class="text-center text-gray-400">لا توجد مباريات قادمة.</p>';
-            }
-
-            upcomingMatches.forEach(match => {
-                const team1Data = allTeams.find(t => t.name === match.team1);
-                const team2Data = allTeams.find(t => t.name === match.team2);
-
-                const team1Logo = team1Data ? team1Data.logo : 'https://placehold.co/40x40/1a202c/ffffff?text=Logo';
-                const team2Logo = team2Data ? team2Data.logo : 'https://placehold.co/40x40/1a202c/ffffff?text=Logo';
-
-                const matchCard = document.createElement('div');
-                matchCard.className = 'card match-card';
-                matchCard.innerHTML = `
-                    <div class="team-info">
-                        <img src="${team1Logo}" alt="${match.team1}">
-                        <span class="mt-2 text-sm">${match.team1}</span>
-                    </div>
-                    <div class="flex flex-col items-center">
-                        <span class="text-sm font-bold">${match.time}</span>
-                        <span class="text-xs text-gray-400 mt-1">${match.date}</span>
-                    </div>
-                    <div class="team-info">
-                        <img src="${team2Logo}" alt="${match.team2}">
-                        <span class="mt-2 text-sm">${match.team2}</span>
-                    </div>
-                `;
-                upcomingMatchesList.appendChild(matchCard);
-            });
+        function getTeamLogo(teamName) {
+            const team = allData.teams.find(t => t.name === teamName);
+            return team ? team.logo : `https://placehold.co/40x40/1a202c/ffffff?text=${teamName.substring(0, 3).toUpperCase()}`;
         }
-        
-        function calculateStandings(teams, matches) {
-            const standings = teams.map(team => ({
-                team: team.name,
-                played: 0,
-                won: 0,
-                drawn: 0,
-                lost: 0,
-                goalsFor: 0,
-                goalsAgainst: 0,
-                goalDifference: 0,
-                points: 0,
-            }));
-            
+
+        function calculateStandings(matches) {
+            const standings = {};
+            const leagueTeams = allData.teams.filter(team => team.league === matches[0].league);
+
+            leagueTeams.forEach(team => {
+                standings[team.name] = { played: 0, win: 0, draw: 0, loss: 0, gf: 0, ga: 0, gd: 0, points: 0, name: team.name, logo: getTeamLogo(team.name) };
+            });
+
             matches.forEach(match => {
                 if (match.status === 'finished') {
-                    const team1Standing = standings.find(s => s.team === match.team1);
-                    const team2Standing = standings.find(s => s.team === match.team2);
-                    
-                    if (team1Standing && team2Standing) {
-                        team1Standing.played++;
-                        team2Standing.played++;
-                        
-                        team1Standing.goalsFor += match.score1;
-                        team1Standing.goalsAgainst += match.score2;
-                        team2Standing.goalsFor += match.score2;
-                        team2Standing.goalsAgainst += match.score1;
-                        
-                        if (match.score1 > match.score2) {
-                            team1Standing.won++;
-                            team1Standing.points += 3;
-                            team2Standing.lost++;
-                        } else if (match.score2 > match.score1) {
-                            team2Standing.won++;
-                            team2Standing.points += 3;
-                            team1Standing.lost++;
-                        } else {
-                            team1Standing.drawn++;
-                            team2Standing.drawn++;
-                            team1Standing.points += 1;
-                            team2Standing.points += 1;
-                        }
+                    if (standings[match.team1]) {
+                        standings[match.team1].played++;
+                        standings[match.team1].gf += match.score1;
+                        standings[match.team1].ga += match.score2;
+                    }
+                    if (standings[match.team2]) {
+                        standings[match.team2].played++;
+                        standings[match.team2].gf += match.score2;
+                        standings[match.team2].ga += match.score1;
+                    }
+
+                    if (match.score1 > match.score2) {
+                        if (standings[match.team1]) { standings[match.team1].win++; standings[match.team1].points += 3; }
+                        if (standings[match.team2]) { standings[match.team2].loss++; }
+                    } else if (match.score2 > match.score1) {
+                        if (standings[match.team2]) { standings[match.team2].win++; standings[match.team2].points += 3; }
+                        if (standings[match.team1]) { standings[match.team1].loss++; }
+                    } else {
+                        if (standings[match.team1]) { standings[match.team1].draw++; standings[match.team1].points += 1; }
+                        if (standings[match.team2]) { standings[match.team2].draw++; standings[match.team2].points += 1; }
                     }
                 }
             });
-            
-            // Calculate goal difference and sort
-            standings.forEach(s => {
-                s.goalDifference = s.goalsFor - s.goalsAgainst;
+
+            Object.values(standings).forEach(team => {
+                team.gd = team.gf - team.ga;
             });
-            
-            standings.sort((a, b) => {
-                if (b.points !== a.points) {
-                    return b.points - a.points;
-                }
-                return b.goalDifference - a.goalDifference;
+
+            return Object.values(standings).sort((a, b) => {
+                if (b.points !== a.points) return b.points - a.points;
+                if (b.gd !== a.gd) return b.gd - a.gd;
+                return b.gf - a.gf;
             });
-            
-            // Assign rank
-            standings.forEach((s, index) => {
-                s.rank = index + 1;
-            });
-            
-            return standings;
         }
 
-        function renderNews() {
-            newsList.innerHTML = newsData.map(news => `
-                <div class="news-list-item">
-                    <img src="${news.image}" alt="News Image" class="w-10 h-10 rounded-full">
-                    <span class="text-sm font-semibold">${news.title}</span>
+        function renderStandings(standings) {
+            if (standings.length === 0) {
+                leagueStandingsContainer.innerHTML = `<p class="text-center text-gray-400">لا توجد بيانات ترتيب لهذا الدوري.</p>`;
+                return;
+            }
+
+            let html = `
+                <h2 class="text-3xl font-bold mb-6">ترتيب الدوري</h2>
+                <div class="bg-card rounded-2xl p-4">
+                    <table class="w-full league-table">
+                        <thead>
+                            <tr class="border-b border-gray-600">
+                                <th class="text-right">المركز</th>
+                                <th class="text-right">الفريق</th>
+                                <th>لعب</th>
+                                <th>فاز</th>
+                                <th>تعادل</th>
+                                <th>خسر</th>
+                                <th>له</th>
+                                <th>عليه</th>
+                                <th>فارق</th>
+                                <th>النقاط</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+
+            standings.forEach((team, index) => {
+                html += `
+                    <tr class="striped-table-row">
+                        <td class="text-right font-bold">${index + 1}</td>
+                        <td class="text-right">
+                            <div class="team-cell">
+                                <img src="${team.logo}" alt="${team.name}" class="w-6 h-6 rounded-full">
+                                <span class="font-bold">${team.name}</span>
+                            </div>
+                        </td>
+                        <td>${team.played}</td>
+                        <td>${team.win}</td>
+                        <td>${team.draw}</td>
+                        <td>${team.loss}</td>
+                        <td>${team.gf}</td>
+                        <td>${team.ga}</td>
+                        <td>${team.gd}</td>
+                        <td class="text-green-500 font-bold">${team.points}</td>
+                    </tr>
+                `;
+            });
+
+            html += `
+                        </tbody>
+                    </table>
                 </div>
-            `).join('');
+            `;
+            leagueStandingsContainer.innerHTML = html;
         }
 
-        // Add event listeners to league filter select
+        function renderMatches(matches) {
+            const finished = matches.filter(m => m.status === 'finished');
+            const upcoming = matches.filter(m => m.status === 'upcoming');
+            
+            const renderMatchCard = (match) => {
+                const team1Logo = getTeamLogo(match.team1);
+                const team2Logo = getTeamLogo(match.team2);
+                
+                return `
+                    <div class="bg-card p-4 rounded-xl flex justify-between items-center">
+                        <div class="flex items-center space-x-2 space-x-reverse">
+                            <img src="${team1Logo}" alt="${match.team1}" class="w-10 h-10 rounded-full">
+                            <span class="font-bold">${match.team1}</span>
+                        </div>
+                        
+                        <div class="flex-1 text-center">
+                            ${match.status === 'finished' ? `
+                                <div class="text-green-500 font-bold text-xl">${match.score1} - ${match.score2}</div>
+                                <div class="text-gray-400 text-sm mt-1">الجولة ${match.round}</div>
+                            ` : `
+                                <div class="text-gray-400 text-sm">${match.time}</div>
+                                <div class="text-gray-400 text-sm mt-1">${match.date}</div>
+                                <div class="text-gray-400 text-sm mt-1">الجولة ${match.round}</div>
+                            `}
+                        </div>
+                        
+                        <div class="flex items-center space-x-2 space-x-reverse">
+                            <span class="font-bold">${match.team2}</span>
+                            <img src="${team2Logo}" alt="${match.team2}" class="w-10 h-10 rounded-full">
+                        </div>
+                    </div>
+                `;
+            };
+
+            finishedMatchesList.innerHTML = finished.map(renderMatchCard).join('') || `<p class="text-center text-gray-400">لا توجد نتائج لهذا الدوري حتى الآن.</p>`;
+            upcomingMatchesList.innerHTML = upcoming.map(renderMatchCard).join('') || `<p class="text-center text-gray-400">لا توجد مباريات قادمة لهذا الدوري.</p>`;
+        }
+
+        function updateLeagueSelects() {
+            if (allData.leagues.length > 0) {
+                leagueSelect.innerHTML = allData.leagues.map(league => `<option value="${league}">${league}</option>`).join('');
+            } else {
+                leagueSelect.innerHTML = `<option value="">لا توجد دوريات</option>`;
+            }
+        }
+
+        function renderUI(leagueName) {
+            const filteredMatches = allData.matches.filter(match => match.league === leagueName);
+            const standings = calculateStandings(filteredMatches);
+            renderStandings(standings);
+            renderMatches(filteredMatches);
+        }
+
         leagueSelect.addEventListener('change', (e) => {
-            const selectedLeague = e.target.value;
-            updateContent(selectedLeague);
+            renderUI(e.target.value);
         });
-        
+
         window.onload = fetchData;
     </script>
 </body>
