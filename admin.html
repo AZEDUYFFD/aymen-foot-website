@@ -115,6 +115,11 @@
                 </div>
                 <button type="submit" class="btn w-full">إضافة مباراة</button>
             </form>
+
+            <div id="matches-list" class="mt-8 space-y-4">
+                <h3 class="text-xl font-bold mb-4">المباريات الموجودة</h3>
+                <!-- Matches will be displayed here -->
+            </div>
         </section>
 
         <!-- Manage Teams Section -->
@@ -138,6 +143,7 @@
                 <button type="submit" class="btn w-full">إضافة فريق</button>
             </form>
             <div id="teams-list" class="mt-8 space-y-4">
+                <h3 class="text-xl font-bold mb-4">الفرق الموجودة</h3>
                 <!-- Teams will be displayed here -->
             </div>
         </section>
@@ -155,8 +161,10 @@
         const dateTimeFields = document.getElementById('date-time-fields');
         const roundFields = document.getElementById('round-fields');
         const teamsList = document.getElementById('teams-list');
+        const matchesList = document.getElementById('matches-list');
 
         let allData = { leagues: [], teams: [], matches: [] };
+        let editingMatchId = null;
 
         async function fetchData() {
             try {
@@ -176,6 +184,7 @@
             updateLeagueSelects();
             updateTeamFilters();
             renderTeamsList();
+            renderMatchesList();
         }
 
         async function updateData(data) {
@@ -213,7 +222,7 @@
         
         function updateTeamFilters() {
             const selectedLeague = document.getElementById('league').value;
-            const teamsInLeague = allData.teams.filter(team => team.league === selectedLeague);
+            const teamsInLeague = allData.teams.filter(team => team && team.league === selectedLeague);
 
             team1Select.innerHTML = '';
             team2Select.innerHTML = '';
@@ -247,6 +256,34 @@
             });
         }
 
+        function renderMatchesList() {
+            matchesList.innerHTML = '<h3 class="text-xl font-bold mb-4">المباريات الموجودة</h3>';
+            allData.matches.forEach(match => {
+                const matchDiv = document.createElement('div');
+                matchDiv.className = 'bg-gray-800 p-4 rounded-lg flex justify-between items-center';
+                let matchInfo = '';
+                if (match.status === 'finished') {
+                    matchInfo = `${match.team1} ${match.score1} - ${match.score2} ${match.team2}`;
+                } else if (match.status === 'upcoming') {
+                    matchInfo = `${match.team1} vs ${match.team2} (${match.date} ${match.time})`;
+                } else {
+                    matchInfo = `${match.team1} vs ${match.team2} (مؤجلة)`;
+                }
+                matchDiv.innerHTML = `
+                    <div>
+                        <span class="font-bold">${matchInfo}</span>
+                        <br>
+                        <span class="text-gray-400 text-sm">${match.league} - الجولة ${match.round}</span>
+                    </div>
+                    <div class="flex gap-2">
+                        <button data-match-id="${match.id}" class="edit-btn text-blue-500 hover:text-blue-700">تعديل</button>
+                        <button data-match-id="${match.id}" class="delete-btn text-red-500 hover:text-red-700">حذف</button>
+                    </div>
+                `;
+                matchesList.appendChild(matchDiv);
+            });
+        }
+
         matchTypeRadios.forEach(radio => {
             radio.addEventListener('change', (e) => {
                 if (e.target.value === 'finished') {
@@ -266,6 +303,7 @@
             e.preventDefault();
             const matchType = document.querySelector('input[name="match-type"]:checked').value;
             const newMatch = {
+                id: editingMatchId || Date.now(),
                 team1: document.getElementById('team1').value,
                 team2: document.getElementById('team2').value,
                 league: document.getElementById('league').value,
@@ -281,9 +319,18 @@
                 newMatch.time = document.getElementById('time').value;
             }
 
-            allData.matches.push(newMatch);
+            if (editingMatchId) {
+                const index = allData.matches.findIndex(m => m.id === editingMatchId);
+                if (index !== -1) {
+                    allData.matches[index] = newMatch;
+                }
+            } else {
+                allData.matches.push(newMatch);
+            }
+
             await updateData(allData);
             addMatchForm.reset();
+            editingMatchId = null;
         });
 
         addTeamForm.addEventListener('submit', async (e) => {
@@ -299,12 +346,45 @@
             renderTeamsList();
         });
 
-        document.getElementById('teams-list').addEventListener('click', async (e) => {
-            if (e.target.tagName === 'BUTTON') {
+        teamsList.addEventListener('click', async (e) => {
+            if (e.target.tagName === 'BUTTON' && e.target.dataset.teamName) {
                 const teamName = e.target.dataset.teamName;
                 allData.teams = allData.teams.filter(team => team.name !== teamName);
                 await updateData(allData);
-                renderTeamsList();
+            }
+        });
+
+        matchesList.addEventListener('click', async (e) => {
+            if (e.target.classList.contains('delete-btn')) {
+                const matchId = parseInt(e.target.dataset.matchId);
+                allData.matches = allData.matches.filter(m => m.id !== matchId);
+                await updateData(allData);
+            } else if (e.target.classList.contains('edit-btn')) {
+                const matchId = parseInt(e.target.dataset.matchId);
+                const matchToEdit = allData.matches.find(m => m.id === matchId);
+                
+                document.getElementById('league').value = matchToEdit.league;
+                updateTeamFilters();
+                document.getElementById('team1').value = matchToEdit.team1;
+                document.getElementById('team2').value = matchToEdit.team2;
+                document.getElementById('round').value = matchToEdit.round;
+
+                document.querySelector(`input[name="match-type"][value="${matchToEdit.status}"]`).checked = true;
+                if (matchToEdit.status === 'finished') {
+                    scoreFields.classList.remove('hidden');
+                    dateTimeFields.classList.add('hidden');
+                    document.getElementById('score1').value = matchToEdit.score1;
+                    document.getElementById('score2').value = matchToEdit.score2;
+                } else if (matchToEdit.status === 'upcoming') {
+                    scoreFields.classList.add('hidden');
+                    dateTimeFields.classList.remove('hidden');
+                    document.getElementById('date').value = matchToEdit.date;
+                    document.getElementById('time').value = matchToEdit.time;
+                } else {
+                    scoreFields.classList.add('hidden');
+                    dateTimeFields.classList.add('hidden');
+                }
+                editingMatchId = matchId;
             }
         });
 
