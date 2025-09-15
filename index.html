@@ -166,6 +166,10 @@
         }
 
         function calculateStandings(matches) {
+            // Added a check to see if matches exist before proceeding
+            if (!matches || matches.length === 0) {
+                return [];
+            }
             const standings = {};
             const leagueTeams = allData.teams.filter(team => team.league === matches[0].league);
 
