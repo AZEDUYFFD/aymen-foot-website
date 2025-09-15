@@ -120,19 +120,22 @@
             <div class="bg-card p-6 rounded-2xl border border-gray-700">
                 <h3 class="text-2xl font-bold mb-4 text-green-500">أحدث الأخبار</h3>
                 <!-- News content will be injected here by JS -->
+                <div id="news-content">
+                    <p class="text-center text-gray-400">جاري تحميل الأخبار...</p>
+                </div>
             </div>
         </aside>
     </main>
     
     <script>
-        // Replace with your actual npoint.io endpoints
+        // API endpoint for match and league data
         const API_URL = 'https://api.npoint.io/085b34b3a65fed878377';
 
         const leagueSelect = document.getElementById('league-select');
         const leagueStandingsContainer = document.getElementById('league-standings-container');
         const finishedMatchesList = document.getElementById('finished-matches-list');
         const upcomingMatchesList = document.getElementById('upcoming-matches-list');
-        const newsSection = document.getElementById('news-section');
+        const newsContent = document.getElementById('news-content');
 
         let allData = { leagues: [], teams: [], matches: [] };
 
@@ -148,16 +151,108 @@
                 } else {
                     allData = await response.json();
                 }
+                // Ensure data structure has default empty arrays
                 if (!allData.leagues) allData.leagues = [];
                 if (!allData.teams) allData.teams = [];
                 if (!allData.matches) allData.matches = [];
                 
-                updateLeagueSelects();
-                renderUI(allData.leagues[0]);
+                // Check if there are any leagues to display
+                if (allData.leagues.length > 0) {
+                    updateLeagueSelects();
+                    renderUI(allData.leagues[0]);
+                } else {
+                    // Handle the case where no data is available
+                    updateLeagueSelects();
+                    finishedMatchesList.innerHTML = `<p class="text-center text-gray-400">لا توجد بيانات لعرضها.</p>`;
+                    upcomingMatchesList.innerHTML = `<p class="text-center text-gray-400">لا توجد بيانات لعرضها.</p>`;
+                    leagueStandingsContainer.innerHTML = '';
+                }
             } catch (error) {
                 console.error('Error fetching data:', error);
-                
+                finishedMatchesList.innerHTML = `<p class="text-center text-red-400">حدث خطأ أثناء تحميل البيانات.</p>`;
+                upcomingMatchesList.innerHTML = `<p class="text-center text-red-400">حدث خطأ أثناء تحميل البيانات.</p>`;
             }
+        }
+
+        async function fetchNews() {
+            if (!newsContent) return; // Guard clause if the element doesn't exist
+            
+            const apiKey = ""; 
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+            const userQuery = "Provide the top 3 latest football news headlines from Algeria in Arabic. For each, provide a brief summary.";
+
+            const payload = {
+                contents: [{ parts: [{ text: userQuery }] }],
+                tools: [{ "google_search": {} }],
+                generationConfig: {
+                    responseMimeType: "application/json",
+                    responseSchema: {
+                        type: "OBJECT",
+                        properties: {
+                            "news_articles": {
+                                type: "ARRAY",
+                                items: {
+                                    type: "OBJECT",
+                                    properties: {
+                                        "headline": { "type": "STRING", "description": "The news headline in Arabic." },
+                                        "summary": { "type": "STRING", "description": "A short summary of the news in Arabic." }
+                                    },
+                                    required: ["headline", "summary"]
+                                }
+                            }
+                        },
+                        required: ["news_articles"]
+                    }
+                }
+            };
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) throw new Error(`API call failed with status: ${response.status}`);
+
+                const result = await response.json();
+                const candidate = result.candidates?.[0];
+
+                if (candidate && candidate.content?.parts?.[0]?.text) {
+                    const jsonText = candidate.content.parts[0].text;
+                    const parsedJson = JSON.parse(jsonText);
+                    renderNews(parsedJson.news_articles);
+                } else {
+                    throw new Error('Invalid response structure from API');
+                }
+
+            } catch (error) {
+                console.error('Error fetching news:', error);
+                if(newsContent){
+                    newsContent.innerHTML = `<p class="text-center text-red-400">فشل في تحميل الأخبار. الرجاء المحاولة مرة أخرى لاحقاً.</p>`;
+                }
+            }
+        }
+
+        function renderNews(articles) {
+            if (!newsContent || !articles || articles.length === 0) {
+                if(newsContent) {
+                    newsContent.innerHTML = `<p class="text-center text-gray-400">لا توجد أخبار حالياً.</p>`;
+                }
+                return;
+            }
+
+            let html = '<div class="space-y-4">';
+            articles.forEach(article => {
+                html += `
+                    <div class="border-b border-gray-700 pb-4 last:border-b-0">
+                        <h4 class="font-bold text-lg text-white mb-1">${article.headline}</h4>
+                        <p class="text-gray-400 text-sm">${article.summary}</p>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            newsContent.innerHTML = html;
         }
 
         function getTeamLogo(teamName) {
@@ -166,7 +261,6 @@
         }
 
         function calculateStandings(matches) {
-            // Added a check to see if matches exist before proceeding
             if (!matches || matches.length === 0) {
                 return [];
             }
@@ -222,8 +316,8 @@
 
             let html = `
                 <h2 class="text-3xl font-bold mb-6">ترتيب الدوري</h2>
-                <div class="bg-card rounded-2xl p-4">
-                    <table class="w-full league-table">
+                <div class="bg-card rounded-2xl p-4 overflow-x-auto">
+                    <table class="w-full league-table min-w-max">
                         <thead>
                             <tr class="border-b border-gray-600">
                                 <th class="text-right">المركز</th>
@@ -272,7 +366,27 @@
         }
 
         function renderMatches(matches) {
-            const finished = matches.filter(m => m.status === 'finished');
+            // Find all finished matches first
+            const allFinished = matches.filter(m => m.status === 'finished');
+
+            // Determine the latest round number from the finished matches
+            let latestRound = 0;
+            if (allFinished.length > 0) {
+                // Ensure rounds are treated as numbers to avoid string comparison issues
+                latestRound = Math.max(...allFinished.map(m => parseInt(m.round, 10)));
+            }
+            
+            // Filter to get only matches from the latest round
+            const finished = allFinished.filter(m => parseInt(m.round, 10) === latestRound).reverse(); // Show most recent first
+
+            // Update the title to show the latest round number
+            const resultsTitle = document.querySelector('#finished-matches-list').previousElementSibling;
+            if (finished.length > 0 && latestRound > 0) {
+                resultsTitle.textContent = `نتائج الجولة ${latestRound}`;
+            } else {
+                resultsTitle.textContent = 'نتائج';
+            }
+
             const upcoming = matches.filter(m => m.status === 'upcoming');
             
             const renderMatchCard = (match) => {
@@ -281,12 +395,12 @@
                 
                 return `
                     <div class="bg-card p-4 rounded-xl flex justify-between items-center">
-                        <div class="flex items-center space-x-2 space-x-reverse">
+                        <div class="flex items-center space-x-2 space-x-reverse text-right flex-1">
                             <img src="${team1Logo}" alt="${match.team1}" class="w-10 h-10 rounded-full">
                             <span class="font-bold">${match.team1}</span>
                         </div>
                         
-                        <div class="flex-1 text-center">
+                        <div class="flex-shrink-0 text-center mx-2">
                             ${match.status === 'finished' ? `
                                 <div class="text-green-500 font-bold text-xl">${match.score1} - ${match.score2}</div>
                                 <div class="text-gray-400 text-sm mt-1">الجولة ${match.round}</div>
@@ -297,7 +411,7 @@
                             `}
                         </div>
                         
-                        <div class="flex items-center space-x-2 space-x-reverse">
+                        <div class="flex items-center space-x-2 space-x-reverse text-left flex-1 justify-end">
                             <span class="font-bold">${match.team2}</span>
                             <img src="${team2Logo}" alt="${match.team2}" class="w-10 h-10 rounded-full">
                         </div>
@@ -305,8 +419,8 @@
                 `;
             };
 
-            finishedMatchesList.innerHTML = finished.map(renderMatchCard).join('') || `<p class="text-center text-gray-400">لا توجد نتائج لهذا الدوري حتى الآن.</p>`;
-            upcomingMatchesList.innerHTML = upcoming.map(renderMatchCard).join('') || `<p class="text-center text-gray-400">لا توجد مباريات قادمة لهذا الدوري.</p>`;
+            finishedMatchesList.innerHTML = finished.length > 0 ? finished.map(renderMatchCard).join('') : `<p class="text-center text-gray-400">لا توجد نتائج لهذا الدوري حتى الآن.</p>`;
+            upcomingMatchesList.innerHTML = upcoming.length > 0 ? upcoming.map(renderMatchCard).join('') : `<p class="text-center text-gray-400">لا توجد مباريات قادمة لهذا الدوري.</p>`;
         }
 
         function updateLeagueSelects() {
@@ -328,7 +442,12 @@
             renderUI(e.target.value);
         });
 
-        window.onload = fetchData;
+        window.onload = () => {
+            fetchData();
+            fetchNews();
+        };
     </script>
 </body>
 </html>
+
+
