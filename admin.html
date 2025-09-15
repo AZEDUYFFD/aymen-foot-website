@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة تحكم AYMEN FOOT</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: #0d1117;
+            color: #ffffff;
+        }
+        .text-green-500 {
+            color: #2ecc71;
+        }
+        .bg-card {
+            background-color: #1a202c;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .input-field {
+            background-color: #2d3748;
+            color: #ffffff;
+            border: 1px solid #4a5568;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+        }
+        .btn {
+            background-color: #2ecc71;
+            color: #ffffff;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background-color: #27ae60;
+        }
+        .match-type-select {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body class="p-6 md:p-12">
+
+    <header class="flex items-center justify-between mb-12">
+        <h1 class="text-3xl font-bold text-green-500">لوحة تحكم AYMEN FOOT</h1>
+        <a href="index.html" class="btn text-sm">العودة للرئيسية</a>
+    </header>
+
+    <main class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+        <!-- Manage Matches Section -->
+        <section class="bg-card p-8 rounded-2xl border border-gray-700">
+            <h2 class="text-2xl font-bold mb-6">إدارة المباريات</h2>
+            <form id="add-match-form" class="space-y-4">
+                <div class="match-type-select">
+                    <label class="inline-flex items-center">
+                        <input type="radio" class="form-radio text-green-500" name="match-type" value="finished" checked>
+                        <span class="ml-2 mr-2">مباراة منتهية</span>
+                    </label>
+                    <label class="inline-flex items-center">
+                        <input type="radio" class="form-radio text-green-500" name="match-type" value="upcoming">
+                        <span class="ml-2 mr-2">مباراة قادمة</span>
+                    </label>
+                </div>
+                <div>
+                    <label for="league" class="block text-sm font-medium mb-1">الدوري:</label>
+                    <select id="league" class="input-field w-full" required>
+                        <option value="المحترف الأول موبيليس">المحترف الأول موبيليس</option>
+                        <option value="المحترف الثاني - غرب">المحترف الثاني - غرب</option>
+                        <option value="المحترف الثاني - شرق">المحترف الثاني - شرق</option>
+                        <option value="القسم الوطني الثالث - شرق">القسم الوطني الثالث - شرق</option>
+                        <option value="القسم الوطني الثالث - وسط شرق">القسم الوطني الثالث - وسط شرق</option>
+                        <option value="القسم الوطني الثالث - وسط غرب">القسم الوطني الثالث - وسط غرب</option>
+                        <option value="القسم الوطني الثالث - غرب">القسم الوطني الثالث - غرب</option>
+                        <option value="القسم الوطني الثالث - الجنوب الشرقي">القسم الوطني الثالث - الجنوب الشرقي</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="team1" class="block text-sm font-medium mb-1">الفريق الأول:</label>
+                    <select id="team1" class="input-field w-full" required>
+                        <!-- Teams will be dynamically added here -->
+                    </select>
+                </div>
+                <div>
+                    <label for="team2" class="block text-sm font-medium mb-1">الفريق الثاني:</label>
+                    <select id="team2" class="input-field w-full" required>
+                        <!-- Teams will be dynamically added here -->
+                    </select>
+                </div>
+                <div id="score-fields">
+                    <div>
+                        <label for="score1" class="block text-sm font-medium mb-1">نتيجة الفريق الأول:</label>
+                        <input type="number" id="score1" class="input-field w-full">
+                    </div>
+                    <div>
+                        <label for="score2" class="block text-sm font-medium mb-1">نتيجة الفريق الثاني:</label>
+                        <input type="number" id="score2" class="input-field w-full">
+                    </div>
+                </div>
+                <div id="date-time-fields" class="hidden">
+                    <div>
+                        <label for="date" class="block text-sm font-medium mb-1">التاريخ:</label>
+                        <input type="date" id="date" class="input-field w-full">
+                    </div>
+                    <div>
+                        <label for="time" class="block text-sm font-medium mb-1">الوقت:</label>
+                        <input type="time" id="time" class="input-field w-full">
+                    </div>
+                </div>
+                <div>
+                    <label for="round" class="block text-sm font-medium mb-1">الجولة:</label>
+                    <input type="text" id="round" class="input-field w-full" required>
+                </div>
+                <button type="submit" class="btn w-full">إضافة مباراة</button>
+            </form>
+        </section>
+
+        <!-- Manage Teams Section -->
+        <section class="bg-card p-8 rounded-2xl border border-gray-700">
+            <h2 class="text-2xl font-bold mb-6">إدارة الفرق</h2>
+            <form id="add-team-form" class="space-y-4">
+                <div>
+                    <label for="team-name" class="block text-sm font-medium mb-1">اسم الفريق:</label>
+                    <input type="text" id="team-name" class="input-field w-full" required>
+                </div>
+                <div>
+                    <label for="team-logo" class="block text-sm font-medium mb-1">رابط الشعار:</label>
+                    <input type="url" id="team-logo" class="input-field w-full" required>
+                </div>
+                <div>
+                    <label for="team-league" class="block text-sm font-medium mb-1">الدوري:</label>
+                    <select id="team-league" class="input-field w-full" required>
+                        <option value="المحترف الأول موبيليس">المحترف الأول موبيليس</option>
+                        <option value="المحترف الثاني - غرب">المحترف الثاني - غرب</option>
+                        <option value="المحترف الثاني - شرق">المحترف الثاني - شرق</option>
+                        <option value="القسم الوطني الثالث - شرق">القسم الوطني الثالث - شرق</option>
+                        <option value="القسم الوطني الثالث - وسط شرق">القسم الوطني الثالث - وسط شرق</option>
+                        <option value="القسم الوطني الثالث - وسط غرب">القسم الوطني الثالث - وسط غرب</option>
+                        <option value="القسم الوطني الثالث - غرب">القسم الوطني الثالث - غرب</option>
+                        <option value="القسم الوطني الثالث - الجنوب الشرقي">القسم الوطني الثالث - الجنوب الشرقي</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn w-full">إضافة فريق</button>
+            </form>
+        </section>
+    </main>
+
+    <script>
+        const addMatchForm = document.getElementById('add-match-form');
+        const addTeamForm = document.getElementById('add-team-form');
+        const leagueSelects = document.querySelectorAll('#league, #team-league');
+        const team1Select = document.getElementById('team1');
+        const team2Select = document.getElementById('team2');
+        const matchTypeRadios = document.getElementsByName('match-type');
+        const scoreFields = document.getElementById('score-fields');
+        const dateTimeFields = document.getElementById('date-time-fields');
+        const leagueFilter = document.getElementById('league');
+
+        // Replace with your actual npoint.io endpoints
+        const TEAM_API_URL = 'https://api.npoint.io/3132a87d305bc37819fb/teams';
+        const MATCHES_API_URL = 'https://api.npoint.io/3132a87d305bc37819fb/matches';
+
+        let teamsData = {};
+
+        const allLeagues = ["المحترف الأول موبيليس", "المحترف الثاني - غرب", "المحترف الثاني - شرق", "القسم الوطني الثالث - شرق", "القسم الوطني الثالث - وسط شرق", "القسم الوطني الثالث - وسط غرب", "القسم الوطني الثالث - غرب", "القسم الوطني الثالث - الجنوب الشرقي"];
+
+        // Function to fetch teams from npoint.io
+        async function fetchTeams() {
+            try {
+                const response = await fetch(TEAM_API_URL);
+                if (!response.ok) throw new Error('Failed to fetch teams');
+                const teams = await response.json();
+                
+                // Group teams by league
+                teamsData = teams.reduce((acc, team) => {
+                    if (!acc[team.league]) {
+                        acc[team.league] = [];
+                    }
+                    acc[team.league].push(team);
+                    return acc;
+                }, {});
+
+                updateTeamFilters();
+            } catch (error) {
+                console.error('Error fetching teams:', error);
+                alert('فشل في تحميل الفرق. يرجى التأكد من أن رابط npoint.io صحيح.');
+            }
+        }
+        
+        // Function to post a new team to npoint.io
+        async function postTeam(newTeam) {
+            try {
+                const teams = Object.values(teamsData).flat();
+                teams.push(newTeam);
+                const response = await fetch(TEAM_API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(teams),
+                });
+                if (!response.ok) throw new Error('Failed to post team');
+                return true;
+            } catch (error) {
+                console.error('Error posting team:', error);
+                alert('فشل في إضافة الفريق. يرجى التأكد من أن رابط npoint.io صحيح.');
+                return false;
+            }
+        }
+
+        // Function to post a new match to npoint.io
+        async function postMatch(newMatch) {
+            try {
+                const response = await fetch(MATCHES_API_URL);
+                const matches = await response.json();
+                matches.push(newMatch);
+
+                const postResponse = await fetch(MATCHES_API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(matches),
+                });
+                if (!postResponse.ok) throw new Error('Failed to post match');
+                return true;
+            } catch (error) {
+                console.error('Error posting match:', error);
+                alert('فشل في إضافة المباراة. يرجى التأكد من أن رابط npoint.io صحيح.');
+                return false;
+            }
+        }
+
+        // Function to update league options
+        function updateLeagues(leagues) {
+            leagueSelects.forEach(select => {
+                select.innerHTML = ''; // Clear existing options
+                leagues.forEach(league => {
+                    const option = document.createElement('option');
+                    option.value = league;
+                    option.textContent = league;
+                    select.appendChild(option);
+                });
+            });
+        }
+        
+        function updateTeamFilters() {
+            const selectedLeague = leagueFilter.value;
+            const teamsInLeague = teamsData[selectedLeague] || [];
+
+            team1Select.innerHTML = '';
+            team2Select.innerHTML = '';
+
+            teamsInLeague.forEach(team => {
+                const option1 = document.createElement('option');
+                option1.value = team.name;
+                option1.textContent = team.name;
+                team1Select.appendChild(option1);
+
+                const option2 = document.createElement('option');
+                option2.value = team.name;
+                option2.textContent = team.name;
+                team2Select.appendChild(option2);
+            });
+        }
+
+        // Handle match type radio buttons
+        matchTypeRadios.forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                if (e.target.value === 'finished') {
+                    scoreFields.classList.remove('hidden');
+                    dateTimeFields.classList.add('hidden');
+                } else {
+                    scoreFields.classList.add('hidden');
+                    dateTimeFields.classList.remove('hidden');
+                }
+            });
+        });
+
+        // Handle form submission to add a new match
+        addMatchForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const matchType = document.querySelector('input[name="match-type"]:checked').value;
+            const newMatch = {
+                team1: document.getElementById('team1').value,
+                team2: document.getElementById('team2').value,
+                league: document.getElementById('league').value,
+                round: document.getElementById('round').value,
+                status: matchType,
+            };
+
+            if (matchType === 'finished') {
+                newMatch.score1 = document.getElementById('score1').value ? parseInt(document.getElementById('score1').value) : null;
+                newMatch.score2 = document.getElementById('score2').value ? parseInt(document.getElementById('score2').value) : null;
+            } else {
+                newMatch.date = document.getElementById('date').value;
+                newMatch.time = document.getElementById('time').value;
+            }
+
+            const success = await postMatch(newMatch);
+            if (success) {
+                alert('تم إضافة المباراة بنجاح.');
+                addMatchForm.reset();
+            }
+        });
+
+        // Handle form submission to add a new team
+        addTeamForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const newTeam = {
+                name: document.getElementById('team-name').value,
+                logo: document.getElementById('team-logo').value,
+                league: document.getElementById('team-league').value,
+            };
+            const success = await postTeam(newTeam);
+            if (success) {
+                alert('تم إضافة الفريق بنجاح.');
+                addTeamForm.reset();
+                fetchTeams(); // Re-fetch teams to update team dropdowns
+            }
+        });
+
+        // Listen for league filter change to update team dropdowns
+        leagueFilter.addEventListener('change', updateTeamFilters);
+
+        window.onload = () => {
+             updateLeagues(allLeagues);
+             fetchTeams(); // Fetch teams on page load
+        };
+    </script>
+</body>
+</html>
